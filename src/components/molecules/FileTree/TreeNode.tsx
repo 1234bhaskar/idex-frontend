@@ -1,4 +1,5 @@
 "use client";
+import { FileIcon } from "@/components/atoms/FileIcon/FileIcon";
 import React from "react";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 
@@ -55,16 +56,29 @@ export const TreeNode = ({
           </button>
         ) : (
           // if the node does not have children, it is a file, so we just render its name
-          <p
+          <div
             style={{
-              paddingTop: "10px",
-              fontSize: "15px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "5px",
+              padding: "5px",
+              gap: "5px",
               cursor: "pointer",
-              marginLeft: "5px",
             }}
           >
-            {fileFolderData.name}
-          </p>
+            <FileIcon extension={fileFolderData.name.split(".").pop() || ""} />
+            <p
+              style={{
+                paddingTop: "5px",
+                fontSize: "15px",
+                cursor: "pointer",
+                marginLeft: "5px",
+              }}
+            >
+              {fileFolderData.name}
+            </p>
+          </div>
         )}
 
         {/* for folders which are already open in the tree */}
