@@ -10,3 +10,14 @@ export const createProjectApi = async (payload: { name: string; description: str
         throw error;
     }
 }
+
+export const getProjectTree = async ({ projectId }: { projectId: string }) => {
+    try {
+        const response = await apiClient.get(`/projects/${projectId}/tree`);
+        console.log(response.data);
+        return response?.data?.data;
+    } catch (error) {
+        console.error('Error fetching project tree:', error);
+        throw error;
+    }
+}
