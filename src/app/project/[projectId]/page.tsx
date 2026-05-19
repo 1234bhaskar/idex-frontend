@@ -23,7 +23,7 @@ export default function ProjectPlayground({
   return (
     <>
       Project Id: {projectIdFromUrl.projectId}
-      <>
+      <div className="flex w-full">
         {projectId && (
           <div
             style={{
@@ -39,12 +39,15 @@ export default function ProjectPlayground({
             <TreeStructure />
           </div>
         )}
-      </>
-      <div className="flex ">
-        <EditorButton label="file.js" isActive={true} />
-        <EditorButton label="file.css" isActive={false} />
+
+        <div className="flex-1">
+          <div className="flex ">
+            <EditorButton label="file.js" isActive={true} />
+            <EditorButton label="file.css" isActive={false} />
+          </div>
+          <EditorComponent />
+        </div>
       </div>
-      <EditorComponent />
     </>
   );
 }

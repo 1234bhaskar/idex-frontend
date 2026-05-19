@@ -28,7 +28,7 @@ export const TreeNode = ({
     fileFolderData && (
       <div
         style={{
-          paddingLeft: "15px",
+          paddingLeft: "10px",
           color: "white",
         }}
       >
@@ -60,7 +60,7 @@ export const TreeNode = ({
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: "start",
               borderRadius: "5px",
               padding: "5px",
               gap: "5px",
