@@ -13,7 +13,7 @@ export const createProjectApi = async (payload: { name: string; description: str
 
 export const getProjectTree = async ({ projectId }: { projectId: string }) => {
     try {
-        const response = await apiClient.get(`/projects/${projectId}/tree`);
+        const response = await apiClient.get(`/projects/${encodeURIComponent(projectId)}/tree`);
         console.log(response.data);
         return response?.data?.data;
     } catch (error) {

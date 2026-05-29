@@ -3,8 +3,12 @@ import axios from 'axios'
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 const API_VERSION = process.env.NEXT_PUBLIC_API_VERSION
 
+const normalizedBaseUrl = API_VERSION
+  ? `${BASE_URL.replace(/\/$/, '')}/api/${API_VERSION}`
+  : `${BASE_URL.replace(/\/$/, '')}/api`
+
 export const apiClient = axios.create({
-  baseURL: `${BASE_URL}/api/${API_VERSION}`,
+  baseURL: normalizedBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },

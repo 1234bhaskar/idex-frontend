@@ -1,5 +1,7 @@
 "use client";
 import { FileIcon } from "@/components/atoms/FileIcon/FileIcon";
+import { useEditorSocketStore } from "@/store/editorSocketStore";
+import { useTreeStructureStore } from "@/store/treeStructureStore";
 import React from "react";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 
@@ -18,12 +20,24 @@ export const TreeNode = ({
     {},
   );
 
+  const { editorSocket } = useEditorSocketStore();
+  const { projectId } = useTreeStructureStore();
+
   function toggleVisibility(name: string) {
     setVisibility({
       ...visibility,
       [name]: !visibility[name],
     });
   }
+
+  function handleDoubleClick(fileFolderData: FileFolderData) {
+    console.log("File double-clicked:", fileFolderData);
+    editorSocket?.emit("file:read", {
+      projectId: projectId,
+      path: fileFolderData.path,
+    });
+  }
+
   return (
     fileFolderData && (
       <div
@@ -66,6 +80,7 @@ export const TreeNode = ({
               gap: "5px",
               cursor: "pointer",
             }}
+            onDoubleClick={() => handleDoubleClick(fileFolderData)}
           >
             <FileIcon extension={fileFolderData.name.split(".").pop() || ""} />
             <p

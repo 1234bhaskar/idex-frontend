@@ -4,6 +4,9 @@ import { EditorComponent } from "../../../components/molecules/EditorComponent";
 import { TreeStructure } from "@/components/organism/TreeStructure";
 import { useTreeStructureStore } from "@/store/treeStructureStore";
 import { useEffect, use } from "react";
+import { useEditorSocketStore } from "@/store/editorSocketStore";
+import { io } from "socket.io-client";
+import { useActiveFileTabStore } from "@/store/activeFileTabStore";
 
 export default function ProjectPlayground({
   params,
@@ -15,10 +18,36 @@ export default function ProjectPlayground({
   //   console.log("This is a project ID: ", resolvedParams.projectId);
 
   const { setProjectId, projectId } = useTreeStructureStore();
+  const { setEditorSocket, editorSocket } = useEditorSocketStore();
+  const { setActiveFileTab } = useActiveFileTabStore();
 
   useEffect(() => {
     setProjectId(projectIdFromUrl.projectId);
-  }, [setProjectId, projectIdFromUrl.projectId]);
+    const editorSocketConn = io(`${process.env.NEXT_PUBLIC_API_URL}/editor`, {
+      query: { projectId: projectIdFromUrl.projectId },
+    });
+    setEditorSocket(editorSocketConn);
+
+    return () => {
+      editorSocketConn.disconnect();
+    };
+  }, [setProjectId, setEditorSocket, projectIdFromUrl.projectId]);
+
+  useEffect(() => {
+    if (!editorSocket) return;
+
+    function handleFileReadSuccess(data: any) {
+      console.log("File content received:", data);
+      const extension = data.path.split(".").pop() || "";
+      setActiveFileTab(data.path, data.content, extension);
+    }
+
+    editorSocket.on("file:read-success", handleFileReadSuccess);
+
+    return () => {
+      editorSocket.off("file:read-success", handleFileReadSuccess);
+    };
+  }, [editorSocket, setActiveFileTab]);
 
   return (
     <>
