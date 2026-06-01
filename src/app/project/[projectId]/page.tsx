@@ -39,7 +39,7 @@ export default function ProjectPlayground({
     function handleFileReadSuccess(data: any) {
       console.log("File content received:", data);
       const extension = data.path.split(".").pop() || "";
-      setActiveFileTab(data.path, data.content, extension);
+      setActiveFileTab(data.path, data.content || data.data, extension);
     }
 
     editorSocket.on("file:read-success", handleFileReadSuccess);
