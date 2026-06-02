@@ -17,6 +17,7 @@ const languageMap: Record<string, string> = {
 };
 
 export const EditorComponent = () => {
+  let timerId = null as unknown as NodeJS.Timeout | null;
   const { activeFileTab, setActiveFileTab } = useActiveFileTabStore();
   const [editorState, setEditorState] = useState<any>({
     theme: draculaTheme,
@@ -27,6 +28,27 @@ export const EditorComponent = () => {
     monaco.editor.defineTheme("dracula", editorState?.theme);
     monaco.editor.setTheme("dracula");
   }
+
+  //use debouncing to limit the number of times the handleChange function is called when the user is typing
+  function handleChange(value: string | undefined, event: any) {
+    //clear old timers
+    if (timerId !== null) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => {
+      const editorContent = value;
+      editorSocket?.emit("file:write", {
+        path: activeFileTab.path,
+        content: editorContent,
+      });
+    }, 2000);
+  }
+
+  editorSocket?.on("file", (data: any) => {
+    console.log("File update received:", data);
+    const extension = data.path.split(".").pop() || "";
+    setActiveFileTab(data.path, data.data, extension);
+  });
 
   return (
     <>
@@ -45,6 +67,7 @@ export const EditorComponent = () => {
               ? activeFileTab.value
               : "// Welcome to your code editor!"
           }
+          onChange={handleChange}
           onMount={handleEditorTheme}
         />
       )}
