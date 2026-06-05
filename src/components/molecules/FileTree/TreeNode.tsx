@@ -1,5 +1,6 @@
 "use client";
 import { FileIcon } from "@/components/atoms/FileIcon/FileIcon";
+import { useActiveFileTabStore } from "@/store/activeFileTabStore";
 import { useEditorSocketStore } from "@/store/editorSocketStore";
 import { useTreeStructureStore } from "@/store/treeStructureStore";
 import React from "react";
@@ -19,6 +20,7 @@ export const TreeNode = ({
   const [visibility, setVisibility] = React.useState<Record<string, boolean>>(
     {},
   );
+  const { activeFileTab, setActiveFileTab } = useActiveFileTabStore();
 
   const { editorSocket } = useEditorSocketStore();
   const { projectId } = useTreeStructureStore();
@@ -36,6 +38,8 @@ export const TreeNode = ({
       projectId: projectId,
       path: fileFolderData.path,
     });
+    const extension = fileFolderData.path.split(".").pop() || "";
+    setActiveFileTab(fileFolderData.path, fileFolderData.data, extension);
   }
 
   return (

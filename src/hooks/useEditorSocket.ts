@@ -5,7 +5,7 @@ import { useActiveFileTabStore } from "@/store/activeFileTabStore";
 
 export const useEditorSocket = (projectId: string) => {
     const { setEditorSocket, editorSocket } = useEditorSocketStore();
-    const { setActiveFileTab } = useActiveFileTabStore();
+    const { setActiveFileTab, activeFileTab } = useActiveFileTabStore();
 
     useEffect(() => {
         if (!projectId) return;
@@ -26,9 +26,16 @@ export const useEditorSocket = (projectId: string) => {
             setActiveFileTab(data.path, data.data, extension);
         }
 
+        function handleFileWriteSuccess(data: any) {
+            console.log("File write success:", data);
+            editorSocket?.emit("file:read", { path: activeFileTab.path });
+        }
+
         editorSocket.on("readFileSuccess", handleFileReadSuccess);
+        editorSocket.on("writeFileSuccess", handleFileWriteSuccess);
         return () => {
             editorSocket.off("readFileSuccess", handleFileReadSuccess);
+            editorSocket.off("writeFileSuccess", handleFileWriteSuccess);
         };
-    }, [editorSocket, setActiveFileTab]);
+    }, [editorSocket, setActiveFileTab, activeFileTab]);
 };
