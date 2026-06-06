@@ -1,10 +1,14 @@
 "use client";
+
+import React from "react";
 import { FileIcon } from "@/components/atoms/FileIcon/FileIcon";
 import { useActiveFileTabStore } from "@/store/activeFileTabStore";
 import { useEditorSocketStore } from "@/store/editorSocketStore";
 import { useTreeStructureStore } from "@/store/treeStructureStore";
-import React from "react";
+import { FileContextMenu } from "@/components/molecules/FileContextMenu/FileContextMenu";
+import { ContextMenuAction } from "@/components/molecules/FileContextMenu/FileContextMenu.types";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { useFileContextMenuStore } from "@/store/fileContextMenuStore";
 
 export type FileFolderData = {
   name: string;
@@ -20,8 +24,17 @@ export const TreeNode = ({
   const [visibility, setVisibility] = React.useState<Record<string, boolean>>(
     {},
   );
-  const { activeFileTab, setActiveFileTab } = useActiveFileTabStore();
 
+  const {
+    openContextMenu,
+    closeContextMenu,
+    x,
+    y,
+    filePath,
+    fileName,
+    isOpen,
+  } = useFileContextMenuStore();
+  const { activeFileTab, setActiveFileTab } = useActiveFileTabStore();
   const { editorSocket } = useEditorSocketStore();
   const { projectId } = useTreeStructureStore();
 
@@ -40,6 +53,20 @@ export const TreeNode = ({
     });
     const extension = fileFolderData.path.split(".").pop() || "";
     setActiveFileTab(fileFolderData.path, fileFolderData.data, extension);
+  }
+
+  function handleContextMenuForFiles(
+    event: React.MouseEvent<HTMLDivElement>,
+    path: string,
+    name: string,
+  ) {
+    event.preventDefault();
+    openContextMenu(event.clientX, event.clientY, path, name);
+  }
+
+  function handleContextMenuAction(action: ContextMenuAction, path: string) {
+    console.log(`Context menu action: ${action.type} on ${path}`);
+    // Each action type can be wired to the backend later
   }
 
   return (
@@ -84,6 +111,13 @@ export const TreeNode = ({
               gap: "5px",
               cursor: "pointer",
             }}
+            onContextMenu={(e) =>
+              handleContextMenuForFiles(
+                e,
+                fileFolderData.path,
+                fileFolderData.name,
+              )
+            }
             onDoubleClick={() => handleDoubleClick(fileFolderData)}
           >
             <FileIcon extension={fileFolderData.name.split(".").pop() || ""} />
@@ -107,6 +141,17 @@ export const TreeNode = ({
               <TreeNode key={child.name} fileFolderData={child} />
             ))}
           </div>
+        )}
+
+        {isOpen && (
+          <FileContextMenu
+            x={x}
+            y={y}
+            filePath={filePath}
+            fileName={fileName}
+            onClose={closeContextMenu}
+            onAction={handleContextMenuAction}
+          />
         )}
       </div>
     )
