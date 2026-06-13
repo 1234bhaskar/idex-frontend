@@ -5,6 +5,7 @@ import { TreeStructure } from "@/components/organism/TreeStructure";
 import { useTreeStructureStore } from "@/store/treeStructureStore";
 import { useEffect, use } from "react";
 import { useEditorSocket } from "@/hooks/useEditorSocket";
+import { BrowserTerminal } from "@/components/molecules/Terminal/BrowserTerminal";
 
 export default function ProjectPlayground({
   params,
@@ -47,6 +48,9 @@ export default function ProjectPlayground({
             <EditorButton label="file.css" isActive={false} />
           </div>
           <EditorComponent />
+          <div>
+            <BrowserTerminal />
+          </div>
         </div>
       </div>
     </>
